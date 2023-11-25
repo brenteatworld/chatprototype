@@ -27,5 +27,9 @@ username = input("Enter your username: ") # send a username addition
 client_socket.sendall(username.encode('utf-8'))
 print("Connected to chat!")
 
+# listen for messages from server
+receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
+receive_thread.start()
+
 # close connection
 client_socket.close()
