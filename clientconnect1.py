@@ -1,6 +1,7 @@
 #!/bin/python3
 
 import socket
+import threading
 
 def receive_messages(sock):
     """Handles receiving messages from the server."""
@@ -31,5 +32,16 @@ print("Connected to chat!")
 receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
 receive_thread.start()
 
+# loop for sending messages
+try:
+    while True:
+        message = input()
+        if message.lower() == 'exit':
+            break
+        client_socket.sendall(message.encode('utf-8'))
+except KeyboardInterrupt:
+    pass # ctrl+C
+
 # close connection
+print("Closing chat")
 client_socket.close()
