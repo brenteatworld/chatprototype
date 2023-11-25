@@ -13,7 +13,9 @@ def receive_messages(sock):
                 # empty message means server has closed the connection.
                 print("Disconnected from server!")
                 break
-            
+        except Exception as e:
+            print(f"Error receiving emessage: {e}")
+            break
 
 # client set up
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
