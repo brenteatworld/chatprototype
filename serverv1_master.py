@@ -23,3 +23,33 @@ def broadcast_message(message):
         except Exception as e:
             print(f"Error sending message! {e}")
 
+# function handling each client connection
+def handle_client(client_socket):
+    try:
+        # receive username from client and print message
+        username = client_socket.recv(1024).decode('utf-8')
+        clients[username] = client_socket
+        audit_log.append((username, "has joined"))
+        print(f"{username} has joined the chat room!")
+        broadcast_message(f"{username} has joined the chat room!")
+
+        # listen for messages from clients
+        while True:
+            message = client_socket.recv(1024).decode('utf-8')
+            if message:
+                # broadcast to all clients
+                broadcast_message(f"{username}: {message}")
+            else:
+                # client disconnects
+                break
+    except Exception as e:
+        print(f"Error receiving message from {username}: {e}")
+    finally:
+        # clean up thread on disconnect
+        client_socket.close()
+        del clients[username]
+        audit_log.append((username, "left the chat"))
+        print(f"{username} has left the chat!")
+        broadcast_message(f"{username} has left the chat!")
+
+# main server loop function
