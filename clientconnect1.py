@@ -23,8 +23,9 @@ server_address = ('127.0.0.1', 1989) # server IP set to local host - port 1989 u
 client_socket.connect(server_address)
 
 # send hardcoded username - to be used in a later version of app
+username = input("Enter your username: ") # send a username addition
 client_socket.sendall('brent-client-test'.encode('utf-8'))
-print("Username sent to server!")
+print("Connected to chat!")
 
 # close connection
 client_socket.close()
