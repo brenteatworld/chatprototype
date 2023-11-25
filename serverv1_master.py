@@ -53,3 +53,19 @@ def handle_client(client_socket):
         broadcast_message(f"{username} has left the chat!")
 
 # main server loop function
+def run_server():
+    print("Server is running and listening for connections!")
+    while True:
+        # accept new connections
+        client_socket, client_address = server_socket.accept()
+        print(f"Connection from {client_address} has been established!")
+
+        # begin thread to handle client
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.daemon = True
+        client_thread.start()
+
+# server script entry point
+if __name__ == "__main__":
+    run_server()
+    
