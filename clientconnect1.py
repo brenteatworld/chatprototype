@@ -7,7 +7,7 @@ def receive_messages(sock):
     """Handles receiving messages from the server."""
     while True:
         try:
-            message = sock.recv(1024).decoe('utf-8')
+            message = sock.recv(1024).decode('utf-8')
             if message:
                 print(message)
             else:
@@ -15,7 +15,7 @@ def receive_messages(sock):
                 print("Disconnected from server!")
                 break
         except Exception as e:
-            print(f"Error receiving emessage: {e}")
+            print(f"Error receiving message: {e}")
             break
 
 # client set up
