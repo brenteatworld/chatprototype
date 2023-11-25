@@ -24,7 +24,7 @@ client_socket.connect(server_address)
 
 # send hardcoded username - to be used in a later version of app
 username = input("Enter your username: ") # send a username addition
-client_socket.sendall('brent-client-test'.encode('utf-8'))
+client_socket.sendall(message.encode('utf-8'))
 print("Connected to chat!")
 
 # close connection
