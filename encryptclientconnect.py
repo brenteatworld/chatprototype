@@ -2,7 +2,14 @@
 
 import socket
 import threading
+import cryptography.fernet; from cryptography.fernet import Fernet
 import sys
+
+# generate / load encryption key
+with open('secret.key', 'rb') as key_file:
+    key = key_file.read()
+    
+cipher_suite = Fernet(key)
 
 # flag for controlling receive_messages thread.
 running = True
@@ -11,8 +18,10 @@ def receive_messages(sock):
     global running
     while running:
         try:
-            message = sock.recv(1024).decode('utf-8')
-            if message:
+            encrypted_message = sock.recv(1024)
+            if encrypted_message:
+                # decrypt message
+                message = cipher_suite.decrypt(encrypted_message).decode('utf-8')
                 print(message)
             else:
                 # empty message means server has closed the connection.
@@ -32,7 +41,9 @@ def send_messages(sock):
             if message.lower() == 'exit':
                 running = False
                 break
-            sock.sendall(message.encode('utf-8'))
+            # encrypt message before sending
+            encrypted_message = cipher_suite.encrypt(message.encode('utf-8'))
+            sock.sendall(encrypted_message)
         except Exception as e:
             print(f"Error sending message: {e}")
             running = False

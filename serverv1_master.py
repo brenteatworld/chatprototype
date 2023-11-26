@@ -6,6 +6,14 @@ import cryptography.fernet; from cryptography.fernet import Fernet
 
 # encryption key
 key = Fernet.generate_key()
+
+# write server generated key to file
+with open('secret.key', 'wb') as key_file:
+    key_file.write(key)
+
+with open('secret.key', 'rb') as key_file:
+    key = key_file.read()
+
 cipher_suite = Fernet(key)
 
 # initialise the server socket
@@ -44,8 +52,11 @@ def handle_client(client_socket):
 
         # listen for messages from clients
         while True:
-            message = client_socket.recv(1024).decode('utf-8')
-            if message:
+            encrypted_message = client_socket.recv(1024)
+            if encrypted_message:
+                # decrypt received message
+                message = cipher_suite.decrypt(encrypted_message).decode('utf-8')
+                print(f"Received message from {username}: {message}")
                 # broadcast to all clients
                 broadcast_message(f"{username}: {message}")
             else:
