@@ -2,10 +2,14 @@
 
 import socket
 import threading
+import sys
+
+# flag for controlling receive_messages thread.
+running = True
 
 def receive_messages(sock):
-    """Handles receiving messages from the server."""
-    while True:
+    global running
+    while running:
         try:
             message = sock.recv(1024).decode('utf-8')
             if message:
@@ -13,9 +17,25 @@ def receive_messages(sock):
             else:
                 # empty message means server has closed the connection.
                 print("Disconnected from server!")
-                break
+                running = False
         except Exception as e:
-            print(f"Error receiving message: {e}")
+            if running:
+                print(f"Error receiving message: {e}")
+            running = False
+            break
+
+def send_messages(sock):
+    global running
+    while running:
+        try:
+            message = input()
+            if message.lower() == 'exit':
+                running = False
+                break
+            sock.sendall(message.encode('utf-8'))
+        except Exception as e:
+            print(f"Error sending message: {e}")
+            running = False
             break
 
 # client set up
@@ -32,16 +52,14 @@ print("Connected to chat!")
 receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
 receive_thread.start()
 
-# loop for sending messages
-try:
-    while True:
-        message = input()
-        if message.lower() == 'exit':
-            break
-        client_socket.sendall(message.encode('utf-8'))
-except KeyboardInterrupt:
-    pass # ctrl+C
+# sending messages function in main thread
+send_messages(client_socket)
+
+# close socket when False - disable further connections.
+client_socket.shutdown(socket.SHUT_RDWR)
+client_socket.close()
 
 # close connection
+receive_thread.join()
+
 print("Closing chat")
-client_socket.close()
