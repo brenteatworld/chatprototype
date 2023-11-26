@@ -2,6 +2,11 @@
 
 import socket
 import threading
+import cryptography.fernet; from cryptography.fernet import Fernet
+
+# encryption key
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
 
 # initialise the server socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,12 +21,16 @@ clients = {}
 audit_log = []
 
 # function handling broadcasting of messages to all clients
-def broadcast_message(message):
-    for client_socket in clients.values():
-        try:
-            client_socket.send(message.encode('utf-8'))
-        except Exception as e:
-            print(f"Error sending message! {e}")
+def broadcast_message(message, sender_username=None):
+    for username, client_socket in list(clients.items()):
+        if username != sender_username:
+            try:
+                encrypted_message = cipher_suite.encrypt(message.encode('utf-8'))
+                client_socket.send(encrypted_message)
+            except Exception as e:
+                print(f"Error sending message to {username}: {e}")
+                client_socket.close()
+                del clients[username]
 
 # function handling each client connection
 def handle_client(client_socket):
