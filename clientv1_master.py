@@ -5,10 +5,21 @@ import threading
 import cryptography.fernet; from cryptography.fernet import Fernet
 import sys
 
+# high contrast settings
+HIGH_CONTRAST_TEXT_COLOUR = "\033[97;100m" # white text on black background
+NORMAL_TEXT_COLOUR = "\033[0m" # reset to default
+
+# ask user if they would like to use accessibility features
+use_high_contrast = input("Would you like to enable high contrast mode? (yes/no): ").strip().lower() == 'yes'
+
+if use_high_contrast:
+    sys.stdout.write(HIGH_CONTRAST_TEXT_COLOUR)
+    sys.stdout.flush()
+
 # generate / load encryption key
 with open('secret.key', 'rb') as key_file:
     key = key_file.read()
-    
+
 cipher_suite = Fernet(key)
 
 # flag for controlling receive_messages thread.
@@ -69,6 +80,10 @@ send_messages(client_socket)
 # close socket when False - disable further connections.
 client_socket.shutdown(socket.SHUT_RDWR)
 client_socket.close()
+
+if use_high_contrast:
+    sys.stdout.write(NORMAL_TEXT_COLOUR)
+    sys.stdout.flush()
 
 # close connection
 receive_thread.join()
