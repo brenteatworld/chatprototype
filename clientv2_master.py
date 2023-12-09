@@ -7,17 +7,6 @@ from tkinter import simpledialog, scrolledtext
 import cryptography.fernet; from cryptography.fernet import Fernet
 import sys
 
-# high contrast settings
-HIGH_CONTRAST_TEXT_COLOUR = "\033[97;100m" # white text on black background
-NORMAL_TEXT_COLOUR = "\033[0m" # reset to default
-
-# ask user if they would like to use accessibility features
-use_high_contrast = input("Would you like to enable high contrast mode? (yes/no): ").strip().lower() == 'yes'
-
-if use_high_contrast:
-    sys.stdout.write(HIGH_CONTRAST_TEXT_COLOUR)
-    sys.stdout.flush()
-
 # generate / load encryption key
 with open('secret.key', 'rb') as key_file:
     key = key_file.read()
@@ -77,6 +66,39 @@ button_fg_color = "black"
 
 # chat display
 chat_display = scrolledtext.ScrolledText(root, state='disabled', fg=fg_color, bg=bg_color, selectbackground=select_bg_color, selectforeground=select_fg_color)
+chat_display.grid(row=0, column=0, columnspan=3)
+
+# message input
+message_entry = tk.Entry(root, width=50, fg=fg_color, bg=bg_color)
+message_entry.grid(row=1, column=0, padx=5, pady=5)
+
+def send_message(event=None):
+    global running
+    message = message_entry.get()
+    message_entry.delete(0, tk.END)
+    if message.lower() == 'exit':
+        running = False
+        root.quit()
+        return
+    # encrypt message before sending
+    encrypted_message = cipher_suite.encrypt(message.encode('utf-8'))
+    client_socket.sendall(encrypted_message)
+
+# send button
+send_button = tk.Button(root, text="Send", command=send_message, fg=button_fg_color, bg=bg_color)
+send_button.grid(row=1, column=1, padx=5, pady=5)
+
+# exit button
+def exit_chat():
+    global running
+    running = False
+    root.quit()
+
+exit_button = tk.Button(root, text="Exit Chat", command=exit_chat, fg=button_fg_color, bg=bg_color)
+exit_button.grid(row=1, column=2, padx=5, pady=5)
+
+# bind enter key to send message
+root.bind('<Return>', send_message)
 
 def receive_messages(sock):
     global running
