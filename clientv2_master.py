@@ -35,7 +35,7 @@ def speak(text):
 
 # prompt for accessibility options and username
 def prompt_initial_options():
-    username = simpledialog.askstring("Username", "Welcome to SecureChat. Enter your username:" parent=root)
+    username = simpledialog.askstring("Username", "Welcome to SecureChat. Enter your username:", parent=root)
     if not username:
         root.destroy() # quit application if no username is entered.
         return None, False, False
