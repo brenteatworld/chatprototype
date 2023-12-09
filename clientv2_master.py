@@ -4,6 +4,7 @@ import socket
 import threading
 import tkinter as tk
 from tkinter import simpledialog, scrolledtext
+import AppKit
 import cryptography.fernet; from cryptography.fernet import Fernet
 import sys
 
