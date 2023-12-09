@@ -41,8 +41,8 @@ def prompt_initial_options():
         root.destroy() # quit application if no username is entered.
         return None, False, False
     
-    high_contrast = simpledialog.askstring("High Contrast", "Enable High Contrast Mode? (y/n):", parent=root).strip().lower() == 'yes'
-    tts = simpledialog.askstring("Text-To-Speech", "Enable Text-To-Speech? (y/n)", parent=root).strip().lower() == 'yes'
+    high_contrast = simpledialog.askstring("High Contrast", "Enable High Contrast Mode? (y/n):", parent=root).strip().lower() == 'y'
+    tts = simpledialog.askstring("Text-To-Speech", "Enable Text-To-Speech? (y/n)", parent=root).strip().lower() == 'y'
 
     return username, high_contrast, tts
 
