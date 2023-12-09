@@ -46,6 +46,8 @@ def prompt_initial_options():
 
     return username, high_contrast, tts
 
+username, high_contrast, enable_tts = prompt_initial_options()
+
 # if username prompt is cancelled - quit application
 if username is None:
     exit (0)
