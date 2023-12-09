@@ -56,7 +56,27 @@ def prompt_initial_options():
 
     return username, high_contrast, tts
 
+# if username prompt is cancelled - quit application
+if username is None:
+    exit (0)
 
+if high_contrast:
+    root.configure(bg="white")
+    fg_color = "black"
+    bg_color = "white"
+    select_bg_color = "grey"
+    select_fg_color = "white"
+else:
+    root.configure(bg="black")
+    fg_color = "white"
+    bg_color = "black"
+    select_bg_color = "blue"
+    select_fg_color = "yellow"
+
+button_fg_color = "black"
+
+# chat display
+chat_display = scrolledtext.ScrolledText(root, state='disabled', fg=fg_color, bg=bg_color, selectbackground=select_bg_color, selectforeground=select_fg_color)
 
 def receive_messages(sock):
     global running
