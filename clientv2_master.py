@@ -133,24 +133,17 @@ server_address = ('127.0.0.1', 1989) # server IP set to local host - port 1989 u
 client_socket.connect(server_address)
 
 # send hardcoded username - to be used in a later version of app
-username = input("Enter your username: ") # send a username addition
 client_socket.sendall(username.encode('utf-8'))
-print("Connected to chat!")
+update_chat_display(f"Connected to chat as {username}!")
 
 # listen for messages from server
 receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
 receive_thread.start()
 
-# sending messages function in main thread
-send_messages(client_socket)
-
 # close socket when False - disable further connections.
 client_socket.shutdown(socket.SHUT_RDWR)
 client_socket.close()
 
-if use_high_contrast:
-    sys.stdout.write(NORMAL_TEXT_COLOUR)
-    sys.stdout.flush()
 
 # close connection
 receive_thread.join()
