@@ -19,7 +19,7 @@ running = True
 
 # initial GUI setup
 root = tk.Tk()
-root.title("Chat Client")
+root.title("SecureChat Client Connect")
 
 # NSSpeechSynthesizer added for text-to-speech (macOS only)
 class MacSpeechSynthesizer:
