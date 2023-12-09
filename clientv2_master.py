@@ -140,6 +140,9 @@ update_chat_display(f"Connected to chat as {username}!")
 receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
 receive_thread.start()
 
+# start gui loop
+root.mainloop()
+
 # close socket when False - disable further connections.
 client_socket.shutdown(socket.SHUT_RDWR)
 client_socket.close()
@@ -147,5 +150,3 @@ client_socket.close()
 
 # close connection
 receive_thread.join()
-
-print("Closing chat")
