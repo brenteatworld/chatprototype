@@ -100,6 +100,14 @@ exit_button.grid(row=1, column=2, padx=5, pady=5)
 # bind enter key to send message
 root.bind('<Return>', send_message)
 
+def update_chat_display(message):
+    chat_display.config(state='normal')
+    chat_display.insert(tk.END, message + '\n')
+    chat_display.yview(tk.END)
+    chat_display.config(state='disabled')
+    if enable_tts:
+        speak(message)
+
 def receive_messages(sock):
     global running
     while running:
@@ -108,30 +116,14 @@ def receive_messages(sock):
             if encrypted_message:
                 # decrypt message
                 message = cipher_suite.decrypt(encrypted_message).decode('utf-8')
-                print(message)
+                update_chat_display(message)
             else:
                 # empty message means server has closed the connection.
-                print("Disconnected from server!")
+                update_chat_display("Disconnected from server!")
                 running = False
         except Exception as e:
             if running:
-                print(f"Error receiving message: {e}")
-            running = False
-            break
-
-def send_messages(sock):
-    global running
-    while running:
-        try:
-            message = input()
-            if message.lower() == 'exit':
-                running = False
-                break
-            # encrypt message before sending
-            encrypted_message = cipher_suite.encrypt(message.encode('utf-8'))
-            sock.sendall(encrypted_message)
-        except Exception as e:
-            print(f"Error sending message: {e}")
+                update_chat_display(f"Error receiving message: {e}")
             running = False
             break
 
