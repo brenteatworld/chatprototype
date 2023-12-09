@@ -79,7 +79,7 @@ def send_message(event=None):
     global running
     message = message_entry.get()
     message_entry.delete(0, tk.END)
-    if message.lower() == 'exit':
+    if message.lower() == 'quit app':
         running = False
         root.quit()
         return
