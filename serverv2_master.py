@@ -111,9 +111,12 @@ def handle_client(client_socket):
         # clean up thread on disconnect
         client_socket.close()
         del clients[username]
-        audit_log.append((username, "left the chat"))
-        print(f"{username} has left the chat!")
-        broadcast_message(f"{username} has left the chat!")
+        root.after(0, update_clients_list, "remove", username)
+        left_message = f"{username} has left the chat!"
+        audit_log.append((username, "left"))
+        update_display(left_message)
+        print(left_message)
+        broadcast_message(left_message)
 
 # main server loop function
 def run_server():
