@@ -43,6 +43,22 @@ clients_window.title("Connected Clients")
 clients_list = tk.Listbox(clients_window, width=30, height=15)
 clients_list.pack(padx=10, pady=10)
 
+# function for updating gui display
+def update_display(message):
+    message_display.config(state='normal')
+    message_display.insert(tk.END, message + '\n')
+    message_display.yview(tk.END)
+    message_display.config(state='disabled')
+
+# function to update clients list in clients gui
+def update_clients_list(action, username):
+    if action == "add":
+        clients_list.insert(tk.END, username)
+    elif action == "remove":
+        clients_list.delete(clients_list.get(0, tk.END).index(username))
+
+
+
 # function handling broadcasting of messages to all clients
 def broadcast_message(message, sender_username=None):
     for username, client_socket in list(clients.items()):
