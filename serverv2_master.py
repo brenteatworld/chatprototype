@@ -37,7 +37,11 @@ root.title("Server Control")
 message_display = scrolledtext.ScrolledText(root, state='disabled', height=15, width=50)
 message_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
-
+# gui window for which clients are connected
+clients_window = tk.Toplevel(root)
+clients_window.title("Connected Clients")
+clients_list = tk.Listbox(clients_window, width=30, height=15)
+clients_list.pack(padx=10, pady=10)
 
 # function handling broadcasting of messages to all clients
 def broadcast_message(message, sender_username=None):
