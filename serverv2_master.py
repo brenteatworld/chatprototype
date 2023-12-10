@@ -31,6 +31,14 @@ clients = {}
 # maintain audit log of messages
 audit_log = []
 
+# gui set up for server control
+root = tk.Tk()
+root.title("Server Control")
+message_display = scrolledtext.ScrolledText(root, state='disabled', height=15, width=50)
+message_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
+
+
 # function handling broadcasting of messages to all clients
 def broadcast_message(message, sender_username=None):
     for username, client_socket in list(clients.items()):
