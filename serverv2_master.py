@@ -57,7 +57,12 @@ def update_clients_list(action, username):
     elif action == "remove":
         clients_list.delete(clients_list.get(0, tk.END).index(username))
 
-
+# function for saving audit log
+def save_audit_log():
+    with open('audit_log.txt', 'ab') as file:
+        for log_entry in audit_log:
+            encrypted_log = cipher_suite.encrypt(str(log_entry).encode('utf-8'))
+            file.wrrite(encrypted_log + b'\n')
 
 # function handling broadcasting of messages to all clients
 def broadcast_message(message, sender_username=None):
