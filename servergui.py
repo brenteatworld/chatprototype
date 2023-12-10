@@ -33,9 +33,15 @@ audit_log = []
 
 # GUI setup for server control
 root = tk.Tk()
-root.title("SecureChat Server Control")
+root.title("Server Control")
 message_display = scrolledtext.ScrolledText(root, state='disabled', height=15, width=50)
 message_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
+# Separate window for listing connected clients
+clients_window = tk.Toplevel(root)
+clients_window.title("Connected Clients")
+clients_list = tk.Listbox(clients_window, width=30, height=15)
+clients_list.pack(padx=10, pady=10)
 
 # function for updating GUI display
 def update_display(message):
@@ -43,6 +49,13 @@ def update_display(message):
     message_display.insert(tk.END, message + '\n')
     message_display.yview(tk.END)
     message_display.config(state='disabled')
+
+# function to update clients list in the GUI
+def update_clients_list(action, username):
+    if action == "add":
+        clients_list.insert(tk.END, username)
+    elif action == "remove":
+        clients_list.delete(clients_list.get(0, tk.END).index(username))
 
 # function for saving audit log
 def save_audit_log():
@@ -52,7 +65,7 @@ def save_audit_log():
             file.write(encrypted_log + b'\n')
 
 # function handling broadcasting of messages to all clients
-def broadcast_message(message, sender_username="SecureChat Administrator"):
+def broadcast_message(message, sender_username="Server"):
     for username, client_socket in list(clients.items()):
         if username != sender_username:
             try:
@@ -62,6 +75,7 @@ def broadcast_message(message, sender_username="SecureChat Administrator"):
                 print(f"Error sending message to {username}: {e}")
                 client_socket.close()
                 del clients[username]
+                root.after(0, update_clients_list, "remove", username)
 
 # function handling each client connection
 def handle_client(client_socket):
@@ -69,6 +83,7 @@ def handle_client(client_socket):
         # receive username from client and print message
         username = client_socket.recv(1024).decode('utf-8')
         clients[username] = client_socket
+        root.after(0, update_clients_list, "add", username)
         joined_message = f"{username} has joined the chat room!"
         audit_log.append((username, "joined"))
         update_display(joined_message)
@@ -96,6 +111,7 @@ def handle_client(client_socket):
         # clean up thread on disconnect
         client_socket.close()
         del clients[username]
+        root.after(0, update_clients_list, "remove", username)
         left_message = f"{username} has left the chat!"
         audit_log.append((username, "left"))
         update_display(left_message)
@@ -104,8 +120,8 @@ def handle_client(client_socket):
 
 # function to handle server shutdown
 def shutdown_server():
-    print("\nShutdown Initiated...")
-    update_display("\nShutdown Initiated...")
+    print("\nShutting down the server...")
+    update_display("\nShutting down the server...")
     save_audit_log()
     for client_socket in clients.values():
         client_socket.close()
