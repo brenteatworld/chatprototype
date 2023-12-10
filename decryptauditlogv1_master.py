@@ -3,7 +3,7 @@
 from cryptography.fernet import Fernet
 
 # load encryption key
-with open('secret.key', 'rb') as key_file
+with open('secret.key', 'rb') as key_file:
     key = key_file.read()
 
 cipher_suite = Fernet(key)
