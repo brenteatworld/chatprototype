@@ -65,7 +65,7 @@ def save_audit_log():
             file.wrrite(encrypted_log + b'\n')
 
 # function handling broadcasting of messages to all clients
-def broadcast_message(message, sender_username=None):
+def broadcast_message(message, sender_username="Server Admin"):
     for username, client_socket in list(clients.items()):
         if username != sender_username:
             try:
@@ -75,6 +75,7 @@ def broadcast_message(message, sender_username=None):
                 print(f"Error sending message to {username}: {e}")
                 client_socket.close()
                 del clients[username]
+                root.after(0, update_clients_list, "remove", username)
 
 # function handling each client connection
 def handle_client(client_socket):
