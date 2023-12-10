@@ -118,18 +118,68 @@ def handle_client(client_socket):
         print(left_message)
         broadcast_message(left_message)
 
+# function for server shutdown
+def shutdown_server():
+    print("\nShutting down the server...")
+    update_display("\nShutting down the server...")
+    save_audit_log()
+    for client_socket in clients.values():
+        client_socket.close()
+    server_socket.close()
+    sys.exit(0)
+
+# gui command sending function
+def send_command():
+    command = command_entry.get().strip()
+    command_entry.delete(0, tk.END)
+    if command.lower() == 'exit':
+        shutdown_server()
+    else:
+        update_display(f"Command entered: {command}")
+        print(f"Command entered: {command}")
+
+command_entry = tk.Entry(root, width=30)
+command_entry.grid(row=1, column=0, padx=10, pady=10)
+
+send_button = tk.Button(root, text="Send Command", command=send_command)
+send_button.grid(row=1, column=1, padx=10, pady=10)
+
+# gui broadcast message function
+def broadcast_from_gui():
+    message = broadcast_entry.get().strip()
+    broadcast_entry.delete(0, tk.END)
+    if message:
+        broadcast_message(f"Server Administrator: {message}")
+        update_display(f"Server Broadcast: {message}")
+
+broadcast_entry = tk.Entry(root, width=30)
+broadcast_entry.grid(row=2, column=0, padx=10, pady=10)
+
+broadcast_button = tk.Button(root, text="Broadcast", command=broadcast_from_gui)
+broadcast_button.grid(row=2, column=1, padx=10, pady=10)
+
 # main server loop function
 def run_server():
+    server_thread = threading.Thread(target=listen_for_connections)
+    server_thread.start()
+    root.mainloop()
+
+def listen_for_connections():
     print("Server is running and listening for connections!")
     while True:
         # accept new connections
-        client_socket, client_address = server_socket.accept()
-        print(f"Connection from {client_address} has been established!")
+        try:
+            client_socket, client_address = server_socket.accept()
+            print(f"Connection from {client_address} has been established!")
+            update_display(f"Connection from {client_address} established")
 
-        # begin thread to handle client
-        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
-        client_thread.daemon = True
-        client_thread.start()
+            # begin thread to handle client
+            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+            client_thread.daemon = True
+            client_thread.start()
+        except Exception as e:
+            print("Server stopped listening for connections.")
+            break
 
 # server script entry point
 if __name__ == "__main__":
