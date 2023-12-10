@@ -83,9 +83,12 @@ def handle_client(client_socket):
         # receive username from client and print message
         username = client_socket.recv(1024).decode('utf-8')
         clients[username] = client_socket
+        root.after(0, update_clients_list, "add", username)
+        joined_message = f"{username} has joined the chat room!"
         audit_log.append((username, "has joined"))
-        print(f"{username} has joined the chat room!")
-        broadcast_message(f"{username} has joined the chat room!")
+        update_display(joined_message)
+        print(joined_message)
+        broadcast_message(joined_message)
 
         # listen for messages from clients
         while True:
@@ -93,9 +96,12 @@ def handle_client(client_socket):
             if encrypted_message:
                 # decrypt received message
                 message = cipher_suite.decrypt(encrypted_message).decode('utf-8')
-                print(f"Received message from {username}: {message}")
+                received_message = f"{username}: {message}"
+                update_display(received_message)
+                print(received_message)
+                audit_log.append((username, message))
                 # broadcast to all clients
-                broadcast_message(f"{username}: {message}")
+                broadcast_message(received_message)
             else:
                 # client disconnects
                 break
